@@ -1,23 +1,66 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cover Snap</title>
-<link rel="stylesheet" href="./style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111019">
+  <title>Vice Sunset — Cover Maker</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="src/main.js"></script>
 </head>
 <body>
-<main class="app">
-  <section class="controls">
-    <h1>Cover Snap</h1>
-    <p>A photo and a caption, made into a square cover.</p>
-    <label>Photo <input id="photo" type="file" accept="image/*"></label>
-    <label>Caption <input id="caption" type="text" maxlength="40" value="Sunset Heist"></label>
-    <button id="export" type="button">Export PNG 1080 x 1080</button>
-    <p id="status" role="status"></p>
-  </section>
-  <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
-</main>
-<script type="module" src="./src/main.js"></script>
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Vice Sunset home"><span class="brand-mark">V</span><span>VICE<span class="brand-light"> / SUNSET</span></span></a>
+      <div class="top-meta"><span class="status-dot"></span> LOCAL STUDIO <span class="meta-divider"></span> YOUR PHOTOS STAY ON THIS DEVICE</div>
+      <button class="export-button" id="exportBtn"><span>↓</span> Export PNG</button>
+    </header>
+    <main class="studio">
+      <aside class="sidebar">
+        <div class="side-heading"><span>01</span><div><h1>Build your cover</h1><p>Make a moment look legendary.</p></div></div>
+        <section class="control-section">
+          <div class="section-label"><span>YOUR PHOTOS</span><span class="label-count" id="photoCount">02</span></div>
+          <div class="sample-row">
+            <button class="sample-card selected" data-sample="boulevard"><img src="samples/boulevard.jpg" alt="Palm-lined coastal boulevard at dusk"><span>COAST DRIVE</span></button>
+            <button class="sample-card" data-sample="pier"><img src="samples/pier.jpg" alt="Neon-lit pier at sunset"><span>NEON PIER</span></button>
+          </div>
+          <label class="upload-button"><span class="upload-icon">＋</span><span>Add your own photos</span><input id="photoInput" type="file" accept="image/*" multiple></label>
+          <p class="hint">JPG or PNG · kept on your device</p>
+        </section>
+        <section class="control-section">
+          <div class="section-label"><span>LAYOUT</span><span class="label-count">03</span></div>
+          <div class="layout-row" role="group" aria-label="Cover layout">
+            <button class="layout-choice active" data-layout="hero" aria-label="Hero and two stacked panels"><span class="layout-icon hero-layout"><i></i><i></i><i></i></span><small>HERO</small></button>
+            <button class="layout-choice" data-layout="strips" aria-label="Three vertical strips"><span class="layout-icon strip-layout"><i></i><i></i><i></i></span><small>STRIPS</small></button>
+            <button class="layout-choice" data-layout="grid" aria-label="Four panel grid"><span class="layout-icon grid-layout"><i></i><i></i><i></i><i></i></span><small>GRID</small></button>
+          </div>
+          <div class="panel-row"><label for="panelSelect">EDIT PANEL</label><select id="panelSelect"><option value="0">01 · Feature</option><option value="1">02 · Side story</option><option value="2">03 · Side story</option><option value="3">04 · Detail</option></select></div>
+          <div class="range-row"><label for="zoom">PANEL ZOOM <span id="zoomValue">1.0×</span></label><input id="zoom" type="range" min="1" max="2.5" step="0.05" value="1"></div>
+          <button id="fitBtn" class="text-button">↗ &nbsp; Fit photo to panel</button>
+        </section>
+        <section class="control-section caption-section">
+          <div class="section-label"><span>THE HEADLINE</span><span class="label-count">Aa</span></div>
+          <input class="caption-input" id="caption" maxlength="32" value="AFTER THE GLOW" aria-label="Cover headline">
+          <div class="range-row"><label for="typeSize">LETTER SIZE <span id="sizeValue">88</span></label><input id="typeSize" type="range" min="42" max="130" value="88"></div>
+          <div class="segmented" role="group" aria-label="Caption position"><button class="active" data-position="bottom">BOTTOM</button><button data-position="top">TOP</button></div>
+          <label class="check-row"><input id="outlineToggle" type="checkbox" checked><span class="checkmark"></span><span>Ink outline</span><small>CRISP EDGE</small></label>
+        </section>
+        <section class="control-section grade-section">
+          <div class="section-label"><span>COLOUR STORY</span><span class="label-count">03</span></div>
+          <div class="grade-row">
+            <button class="grade-choice active" data-grade="vice"><span class="grade-swatch vice-swatch"></span><span>VICE<br>SUNSET</span></button>
+            <button class="grade-choice" data-grade="neon"><span class="grade-swatch neon-swatch"></span><span>NEON<br>HOUR</span></button>
+            <button class="grade-choice" data-grade="palm"><span class="grade-swatch palm-swatch"></span><span>PALM<br>DUSK</span></button>
+          </div>
+        </section>
+      </aside>
+      <section class="workbench">
+        <div class="canvas-toolbar"><div><span class="live-dot"></span> LIVE PREVIEW <span class="toolbar-muted">· &nbsp; DRAG TO REFRAME</span></div><label class="size-select-wrap"><span>FORMAT</span><select id="sizeSelect"><option value="1920x1080">LANDSCAPE · 16:9</option><option value="1080x1350">PORTRAIT · 4:5</option><option value="1080x1080">SQUARE · 1:1</option></select></label></div>
+        <div class="preview-wrap" id="previewWrap"><canvas id="coverCanvas" aria-label="Live cover preview"></canvas><div class="preview-corners"></div></div>
+        <div class="workbench-footer"><span><kbd>↔</kbd> Drag image to adjust crop</span><span id="canvasDimensions">1920 × 1080 PX</span><span class="saved-state"><i></i> AUTO-SAVED LOCALLY</span></div>
+      </section>
+    </main>
+    <footer class="bottomline"><span>VICE SUNSET COVER MAKER <span>©</span> ORIGINAL FAN ART TOOL</span><span>NO CLOUD. NO UPLOADS. JUST YOUR STORY.</span></footer>
+  </div>
 </body>
 </html>
